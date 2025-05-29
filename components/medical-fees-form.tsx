@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { History, Hospital, RotateCcw } from "lucide-react"
+import { History, RotateCcw } from "lucide-react"
 import Link from "next/link"
 import CalculationResult from "@/components/calculation-result"
 import LoadingOverlay from "@/components/loading-overlay"

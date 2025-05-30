@@ -5,7 +5,7 @@ import { exportToPDF } from "@/utils/pdf-export"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Trash2, ArrowLeft, FileText, Calculator, LayoutList, FileCheck } from "lucide-react"
+import { Trash2, ArrowLeft, FileText, Calculator, LayoutList, ClipboardPlus } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -78,7 +78,7 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
                     <AccordionTrigger>
                       <div className="flex justify-between w-full pr-4 cursor-pointer">
                         <span className="flex items-center gap-2">
-                          <FileCheck />
+                          <ClipboardPlus />
                           Código: {item.codigo}</span>
                         <span className="text-sm text-muted-foreground">{formattedDate}</span>
                       </div>

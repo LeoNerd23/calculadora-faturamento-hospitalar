@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { History, RotateCcw, AlertCircle, Calculator } from "lucide-react"
+import { History, RotateCcw, AlertCircle, Calculator, User, Users } from "lucide-react"
 import Link from "next/link"
 import CalculationResult from "@/components/calculation-result"
 import LoadingOverlay  from "@/components/loading-overlay"
@@ -275,12 +275,12 @@ export default function MedicalFeesForm() {
                   <SelectValue placeholder="Selecione a quantidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">0 Auxiliar</SelectItem>
-                  <SelectItem value="1">1 Auxiliar</SelectItem>
-                  <SelectItem value="2">2 Auxiliares</SelectItem>
-                  <SelectItem value="3">3 Auxiliares</SelectItem>
-                  <SelectItem value="4">4 Auxiliares</SelectItem>
-                  <SelectItem value="5">5 Auxiliares</SelectItem>
+                  <SelectItem value="0"> <User color="#050606" />0 Auxiliar</SelectItem>
+                  <SelectItem value="1"> <User color="#050606" />1 Auxiliar</SelectItem>
+                  <SelectItem value="2"><Users color="#050606" />2 Auxiliares</SelectItem>
+                  <SelectItem value="3"><Users color="#050606" />3 Auxiliares</SelectItem>
+                  <SelectItem value="4"><Users color="#050606" />4 Auxiliares</SelectItem>
+                  <SelectItem value="5"><Users color="#050606" />5 Auxiliares</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
+import { Loader2, Check } from "lucide-react"
 
 interface LoadingOverlayProps {
   isVisible: boolean
@@ -47,7 +47,13 @@ export default function LoadingOverlay({ isVisible, onComplete }: LoadingOverlay
       {/* Loading card */}
       <Card className="relative z-10 w-80">
         <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          {currentMessageIndex < messages.length - 1 ? (
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center">
+              <Check className="h-5 w-5 text-white" />
+            </div>
+          )}
           <p className="text-center text-sm font-medium">{messages[currentMessageIndex]}</p>
         </CardContent>
       </Card>

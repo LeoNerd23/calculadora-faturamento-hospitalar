@@ -5,7 +5,7 @@ import { exportToPDF } from "@/utils/pdf-export"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Trash2, ArrowLeft, FileText } from "lucide-react"
+import { Trash2, ArrowLeft, FileText, Calculator, LayoutList, FileCheck } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -43,12 +43,12 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Link href="/">
-          <Button variant="outline"className="cursor-pointer">
+          <Button variant="outline" className="cursor-pointer">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar para Calculadora
+            <Calculator />
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold">Histórico de Cálculos</h1>
+        <h1 className="text-2xl font-bold">Histórico</h1>
         <div></div>
       </div>
 
@@ -62,7 +62,9 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
         <Card className="w-full">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Cálculos Realizados ({history.length})</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <LayoutList />
+                Cálculos Realizados ({history.length})</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -75,7 +77,9 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger>
                       <div className="flex justify-between w-full pr-4 cursor-pointer">
-                        <span>Código: {item.codigo}</span>
+                        <span className="flex items-center gap-2">
+                          <FileCheck />
+                          Código: {item.codigo}</span>
                         <span className="text-sm text-muted-foreground">{formattedDate}</span>
                       </div>
                     </AccordionTrigger>
@@ -84,13 +88,27 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
                           <div className="space-y-2">
                             <div className="flex justify-between">
-                              <span className="font-medium">Quantidade de Pontos:</span>
-                              <span>{item.quantidadePontos}</span>
+                              <span className="font-medium">Código:</span>
+                              <span>{item.codigo}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Incremento (%):</span>
+                              <span>{item.incremento}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Valor SH:</span>
+                              <span>{formatCurrency(item.valorSH)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Valor TSP:</span>
+                              <span>{formatCurrency(item.valorPrimeiroAuxiliar)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="font-medium">Valor Anestesista:</span>
                               <span>{formatCurrency(item.valorAnestesista)}</span>
                             </div>
+                          </div>
+                          <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="font-medium">Valor Cirurgião:</span>
                               <span>{formatCurrency(item.valorCirurgiao)}</span>
@@ -99,23 +117,17 @@ export default function HistoryList({ history, onHistoryChange }: HistoryListPro
                               <span className="font-medium">Valor 1º Auxiliar:</span>
                               <span>{formatCurrency(item.valorPrimeiroAuxiliar)}</span>
                             </div>
-                          </div>
-                          <div className="space-y-2">
                             <div className="flex justify-between">
-                              <span className="font-medium">Valor 2º Auxiliar:</span>
+                              <span className="font-medium">Valor 2º ao 5º Auxiliar:</span>
                               <span>{formatCurrency(item.valorSegundoAuxiliar)}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="font-medium">Total Valor SP:</span>
+                              <span className="font-medium">Valor Total SP:</span>
                               <span>{formatCurrency(item.valorSP)}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="font-medium">Valor SH:</span>
-                              <span>{formatCurrency(item.valorSH)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="font-medium">Auxiliares:</span>
-                              <span>{item.quantidadeAuxiliares}</span>
+                              <span className="font-medium">Valor Total do procedimento:</span>
+                              <span>{formatCurrency(item.valorCirurgiao)}</span>
                             </div>
                           </div>
                         </div>

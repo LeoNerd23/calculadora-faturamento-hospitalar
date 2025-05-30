@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dattra - Cálculo de Honorários Médicos",
-  description: "Cálculo de Honorários Médicos",
+  title: "Dattra",
+  description: "Cálculo de Procedimentos Hospitalares",
 };
 
 export default function RootLayout({

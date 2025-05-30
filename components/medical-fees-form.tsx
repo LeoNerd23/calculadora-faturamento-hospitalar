@@ -12,10 +12,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { History, RotateCcw, AlertCircle, Calculator, User, Users } from "lucide-react"
 import Link from "next/link"
 import CalculationResult from "@/components/calculation-result"
-import LoadingOverlay  from "@/components/loading-overlay"
+import LoadingOverlay from "@/components/loading-overlay"
 import type { MedicalFeeInput, MedicalFeeResult } from "@/types/calculation"
 import { calculateMedicalFees, saveCalculationToHistory, formatCurrency } from "@/utils/calculation"
-import Image from 'next/image'
+import Image from "next/image"
 
 export default function MedicalFeesForm() {
   const [incrementoEnabled, setIncrementoEnabled] = useState(false)
@@ -51,28 +51,41 @@ export default function MedicalFeesForm() {
     // Remove tudo que não é número
     const numbers = value.replace(/\D/g, "")
 
-    // Aplica a máscara xx.xx.xx.xxx-x
-    let formatted = numbers
-    if (numbers.length >= 2) {
-      formatted = numbers.slice(0, 2) + "." + numbers.slice(2)
+    // Limita a 10 dígitos
+    const limitedNumbers = numbers.slice(0, 10)
+
+    // Aplica a máscara xx.xx.xx.xxx-x apenas se houver números
+    if (limitedNumbers.length === 0) return ""
+
+    let formatted = limitedNumbers
+
+    if (limitedNumbers.length > 2) {
+      formatted = limitedNumbers.slice(0, 2) + "." + limitedNumbers.slice(2)
     }
-    if (numbers.length >= 4) {
-      formatted = numbers.slice(0, 2) + "." + numbers.slice(2, 4) + "." + numbers.slice(4)
+    if (limitedNumbers.length > 4) {
+      formatted = limitedNumbers.slice(0, 2) + "." + limitedNumbers.slice(2, 4) + "." + limitedNumbers.slice(4)
     }
-    if (numbers.length >= 6) {
-      formatted = numbers.slice(0, 2) + "." + numbers.slice(2, 4) + "." + numbers.slice(4, 6) + "." + numbers.slice(6)
-    }
-    if (numbers.length >= 9) {
+    if (limitedNumbers.length > 6) {
       formatted =
-        numbers.slice(0, 2) +
+        limitedNumbers.slice(0, 2) +
         "." +
-        numbers.slice(2, 4) +
+        limitedNumbers.slice(2, 4) +
         "." +
-        numbers.slice(4, 6) +
+        limitedNumbers.slice(4, 6) +
         "." +
-        numbers.slice(6, 9) +
+        limitedNumbers.slice(6)
+    }
+    if (limitedNumbers.length > 9) {
+      formatted =
+        limitedNumbers.slice(0, 2) +
+        "." +
+        limitedNumbers.slice(2, 4) +
+        "." +
+        limitedNumbers.slice(4, 6) +
+        "." +
+        limitedNumbers.slice(6, 9) +
         "-" +
-        numbers.slice(9, 10)
+        limitedNumbers.slice(9)
     }
 
     return formatted
@@ -158,9 +171,15 @@ export default function MedicalFeesForm() {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
             <Calculator />
-          Cálculo de Procedimentos Hospitalares</CardTitle>
+            Cálculo de Procedimentos Hospitalares
+            </div>
+            <p className="text-sm text-muted-foreground">
+              v0.1.0-beta
+            </p>
+          </CardTitle>
           <CardDescription>
             Preencha os campos abaixo para calcular os valores do Serviço Profissional e Hospitalar da AIH
           </CardDescription>
@@ -172,10 +191,10 @@ export default function MedicalFeesForm() {
                 <Label htmlFor="codigo">Código</Label>
                 <Input
                   id="codigo"
+                  type="tel"
                   placeholder="00.00.00.000-0"
                   value={formData.codigo}
                   onChange={(e) => handleInputChange("codigo", e.target.value)}
-                  maxLength={14}
                   required
                   className={errors.codigo ? "border-red-500" : ""}
                 />
@@ -190,7 +209,8 @@ export default function MedicalFeesForm() {
                 <Label htmlFor="quantidadePontos">Quantidade de Pontos</Label>
                 <Input
                   id="quantidadePontos"
-                  type="number"
+                  type="tel"
+                  inputMode="numeric"
                   placeholder="Digite a quantidade de pontos"
                   value={formData.quantidadePontos}
                   onChange={(e) => handleInputChange("quantidadePontos", e.target.value)}
@@ -204,6 +224,8 @@ export default function MedicalFeesForm() {
                 <Label htmlFor="valorSP">Valor SP</Label>
                 <Input
                   id="valorSP"
+                  type="tel"
+                  inputMode="numeric"
                   placeholder="R$ 0,00"
                   value={formData.valorSP}
                   onChange={(e) => handleInputChange("valorSP", e.target.value)}
@@ -215,6 +237,8 @@ export default function MedicalFeesForm() {
                 <Label htmlFor="valorSH">Valor SH</Label>
                 <Input
                   id="valorSH"
+                  type="tel"
+                  inputMode="numeric"
                   placeholder="R$ 0,00"
                   value={formData.valorSH}
                   onChange={(e) => handleInputChange("valorSH", e.target.value)}
@@ -226,6 +250,8 @@ export default function MedicalFeesForm() {
                 <Label htmlFor="valorTSP">Valor TSP</Label>
                 <Input
                   id="valorTSP"
+                  type="tel"
+                  inputMode="numeric"
                   placeholder="R$ 0,00"
                   value={formData.valorTSP}
                   onChange={(e) => handleInputChange("valorTSP", e.target.value)}
@@ -234,21 +260,25 @@ export default function MedicalFeesForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center space-x-2">
-              <Switch
-                  id="anestesista-switch"
-                  className="cursor-pointer"
-                  checked={anestesistaEnabled}
-                  onCheckedChange={setAnestesistaEnabled}
-                />
-                <Label htmlFor="anestesista-switch">Inclui Valor da Anestesia</Label>
-                <Switch
-                  id="incremento-switch"
-                  className="cursor-pointer"
-                  checked={incrementoEnabled}
-                  onCheckedChange={setIncrementoEnabled}
-                />
-                <Label htmlFor="incremento-switch">Incremento</Label>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="anestesista-switch"
+                    className="cursor-pointer"
+                    checked={anestesistaEnabled}
+                    onCheckedChange={setAnestesistaEnabled}
+                  />
+                  <Label htmlFor="anestesista-switch">Inclui Valor da Anestesia</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="incremento-switch"
+                    className="cursor-pointer"
+                    checked={incrementoEnabled}
+                    onCheckedChange={setIncrementoEnabled}
+                  />
+                  <Label htmlFor="incremento-switch">Incremento</Label>
+                </div>
               </div>
 
               {incrementoEnabled && (
@@ -256,7 +286,8 @@ export default function MedicalFeesForm() {
                   <Label htmlFor="incremento">Valor do Incremento (%)</Label>
                   <Input
                     id="incremento"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="Digite o valor do incremento"
                     value={formData.incremento}
                     onChange={(e) => handleInputChange("incremento", e.target.value)}
@@ -275,16 +306,39 @@ export default function MedicalFeesForm() {
                   <SelectValue placeholder="Selecione a quantidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0"> <User color="#050606" />0 Auxiliar</SelectItem>
-                  <SelectItem value="1"> <User color="#050606" />1 Auxiliar</SelectItem>
-                  <SelectItem value="2"><Users color="#050606" />2 Auxiliares</SelectItem>
-                  <SelectItem value="3"><Users color="#050606" />3 Auxiliares</SelectItem>
-                  <SelectItem value="4"><Users color="#050606" />4 Auxiliares</SelectItem>
-                  <SelectItem value="5"><Users color="#050606" />5 Auxiliares</SelectItem>
+                  <SelectItem value="0">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" color="#050606" />0 Auxiliar
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="1">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" color="#050606" />1 Auxiliar
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="2">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" color="#050606" />2 Auxiliares
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="3">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" color="#050606" />3 Auxiliares
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="4">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" color="#050606" />4 Auxiliares
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="5">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" color="#050606" />5 Auxiliares
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
 
             <div className="flex gap-3">
               <Button type="submit" className="flex-1 cursor-pointer" disabled={isLoading}>

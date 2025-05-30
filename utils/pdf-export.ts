@@ -1,10 +1,11 @@
 import type { MedicalFeeResult } from "@/types/calculation"
 import { formatCurrency } from "@/utils/calculation"
 
-// Função para exportar cálculo para PDF
+/**
+ * Exporta o cálculo de honorários médicos para PDF com layout profissional
+ */
 export const exportToPDF = async (calculation: MedicalFeeResult) => {
   try {
-    // Criar o conteúdo HTML para o PDF
     const date = new Date(calculation.timestamp)
     const formattedDate = date.toLocaleDateString("pt-BR") + " " + date.toLocaleTimeString("pt-BR")
 
@@ -13,143 +14,263 @@ export const exportToPDF = async (calculation: MedicalFeeResult) => {
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>Relatório de Honorários Médicos</title>
+        <title>Relatório de Honorários Médicos - ${calculation.codigo}</title>
         <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
           body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            line-height: 1.6;
-          }
-          .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-          }
-          .section { 
-            margin-bottom: 25px; 
-          }
-          .section-title { 
-            font-size: 16px; 
-            font-weight: bold; 
-            margin-bottom: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
             color: #333;
-            border-left: 4px solid #007bff;
-            padding-left: 10px;
+            background: #fff;
+            padding: 20px;
           }
-          .data-row { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 8px;
-            padding: 5px 0;
+          
+          .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
           }
-          .data-row:nth-child(even) {
-            background-color: #f8f9fa;
+          
+          .header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #dee2e6;
           }
-          .label { 
-            font-weight: bold; 
-            width: 60%;
+          
+          .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            display: block;
           }
-          .value { 
-            text-align: right;
-            width: 40%;
+          
+          .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
           }
-          .total-row {
-            border-top: 2px solid #333;
-            padding-top: 10px;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 14px;
+          
+          .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
           }
-          .date-info {
+          
+          .codigo-info {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #495057;
+          }
+          
+          .codigo-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            background: #007bff;
+            border-radius: 2px;
+            display: inline-block;
+          }
+          
+          .timestamp {
+            font-size: 11px;
+            color: #6c757d;
+          }
+          
+          .content {
+            padding: 25px;
+          }
+          
+          .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 25px;
+          }
+          
+          .data-column {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+          }
+          
+          .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+          }
+          
+          .data-row:last-child {
+            border-bottom: none;
+          }
+          
+          .data-label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 11px;
+          }
+          
+          .data-value {
+            font-weight: 600;
+            color: #212529;
             text-align: right;
             font-size: 12px;
-            color: #666;
-            margin-bottom: 20px;
+          }
+          
+          .currency {
+            color: #28a745;
+          }
+          
+          .percentage {
+            color: #17a2b8;
+          }
+          
+          .total-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #bbdefb;
+          }
+          
+          .total-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1565c0;
+            margin-bottom: 15px;
+            text-align: center;
+          }
+          
+          .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e1f5fe;
+          }
+          
+          .total-row:last-child {
+            border-bottom: 2px solid #1565c0;
+            font-weight: 700;
+            font-size: 13px;
+            margin-top: 10px;
+            padding-top: 15px;
+          }
+          
+          .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+          }
+          
+          @media print {
+            body {
+              padding: 0;
+            }
+            .container {
+              border: none;
+              border-radius: 0;
+            }
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>Relatório de Honorários Médicos</h1>
-        </div>
-        
-        <div class="date-info">
-          Gerado em: ${formattedDate}
-        </div>
-
-        <div class="section">
-          <div class="section-title">Dados de Entrada</div>
-          <div class="data-row">
-            <span class="label">Código:</span>
-            <span class="value">${calculation.codigo}</span>
+        <div class="container">
+          <div class="header">
+            <h1>Cálculo de Procedimentos Hospitalares</h1>
+            
+            <div class="header-info">
+              <div class="codigo-info">
+                Código: ${calculation.codigo}
+              </div>
+              <div class="timestamp">
+                ${formattedDate}
+              </div>
+            </div>
           </div>
-          <div class="data-row">
-            <span class="label">Quantidade de Pontos:</span>
-            <span class="value">${calculation.quantidadePontos}</span>
+          
+          <div class="content">
+            <div class="data-grid">
+              <div class="data-column">
+                <div class="data-row">
+                  <span class="data-label">Código:</span>
+                  <span class="data-value">${calculation.codigo}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Incremento (%):</span>
+                  <span class="data-value percentage">${((calculation.valorSP / (calculation.quantidadePontos * calculation.valorPonto) - 1) * 100).toFixed(0)}%</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor SH:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorSH)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor TSP:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorPonto * calculation.quantidadePontos)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor Anestesista:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorAnestesista)}</span>
+                </div>
+              </div>
+              
+              <div class="data-column">
+                <div class="data-row">
+                  <span class="data-label">Valor Cirurgião:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorCirurgiao)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor 1º Auxiliar:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorPrimeiroAuxiliar)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor 2º ao 5º Auxiliar:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorSegundoAuxiliar)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor Total SP:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorSP)}</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-label">Valor Total do procedimento:</span>
+                  <span class="data-value currency">${formatCurrency(calculation.valorSP)}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="data-row">
-            <span class="label">Valor SP:</span>
-            <span class="value">${formatCurrency(calculation.valorSP)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Valor SH:</span>
-            <span class="value">${formatCurrency(calculation.valorSH)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Quantidade de Auxiliares:</span>
-            <span class="value">${calculation.quantidadeAuxiliares}</span>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">Resultados dos Cálculos</div>
-          <div class="data-row">
-            <span class="label">Valor Anestesista (30%):</span>
-            <span class="value">${formatCurrency(calculation.valorAnestesista)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Valor Rateio:</span>
-            <span class="value">${formatCurrency(calculation.valorRateio)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Total de Pontos:</span>
-            <span class="value">${calculation.totalPontos}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Valor do Ponto:</span>
-            <span class="value">${formatCurrency(calculation.valorPonto)}</span>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">Distribuição de Valores</div>
-          <div class="data-row">
-            <span class="label">Valor Cirurgião:</span>
-            <span class="value">${formatCurrency(calculation.valorCirurgiao)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Valor 1º Auxiliar:</span>
-            <span class="value">${formatCurrency(calculation.valorPrimeiroAuxiliar)}</span>
-          </div>
-          <div class="data-row">
-            <span class="label">Valor 2º Auxiliar:</span>
-            <span class="value">${formatCurrency(calculation.valorSegundoAuxiliar)}</span>
-          </div>
-          <div class="data-row total-row">
-            <span class="label">Total Valor SP:</span>
-            <span class="value">${formatCurrency(calculation.valorSP)}</span>
+          
+          <div class="footer">
+            <p>Relatório gerado automaticamente pelo sistema DATTRA</p>
+            <p>Este documento é válido apenas para fins informativos</p>
           </div>
         </div>
       </body>
       </html>
     `
 
-    // Criar um blob com o conteúdo HTML
+    // Criar blob e abrir para impressão
     const blob = new Blob([htmlContent], { type: "text/html" })
     const url = URL.createObjectURL(blob)
 
-    // Abrir em nova janela para impressão/salvamento como PDF
     const printWindow = window.open(url, "_blank")
 
     if (printWindow) {
@@ -157,13 +278,13 @@ export const exportToPDF = async (calculation: MedicalFeeResult) => {
         setTimeout(() => {
           printWindow.print()
           URL.revokeObjectURL(url)
-        }, 250)
+        }, 500)
       }
     } else {
       // Fallback: download do arquivo HTML
       const link = document.createElement("a")
       link.href = url
-      link.download = `honorarios-medicos-${calculation.codigo.replace(/\./g, "-")}-${date.toISOString().split("T")[0]}.html`
+      link.download = `relatorio-honorarios-${calculation.codigo.replace(/\./g, "-")}-${date.toISOString().split("T")[0]}.html`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

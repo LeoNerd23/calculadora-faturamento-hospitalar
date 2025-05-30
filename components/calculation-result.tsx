@@ -1,18 +1,26 @@
-import type { MedicalFeeResult } from "@/types/calculation"
-import { formatCurrency } from "@/utils/calculation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileUser } from "lucide-react"
+import type { MedicalFeeResult } from "@/types/calculation";
+import { formatCurrency } from "@/utils/calculation";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FileUser } from "lucide-react";
 
 interface CalculationResultProps {
-  result: MedicalFeeResult | null
+  result: MedicalFeeResult | null;
 }
 
 export default function CalculationResult({ result }: CalculationResultProps) {
-  if (!result) return null
+  if (!result) return null;
 
   // Somar valores do 2º ao 5º auxiliar
   const valorSegundoAoQuintoAuxiliar =
-    result.valorSegundoAuxiliar + result.valorTerceiroAuxiliar + result.valorQuartoAuxiliar + result.valorQuintoAuxiliar
+    result.valorSegundoAuxiliar +
+    result.valorTerceiroAuxiliar +
+    result.valorQuartoAuxiliar +
+    result.valorQuintoAuxiliar;
 
   return (
     <Card className="w-full mt-6">
@@ -20,7 +28,7 @@ export default function CalculationResult({ result }: CalculationResultProps) {
         <CardTitle className="flex items-center gap-2">
           <FileUser />
           Resultado do Cálculo
-          </CardTitle>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -63,13 +71,17 @@ export default function CalculationResult({ result }: CalculationResultProps) {
               <span className="font-medium">Total Valor SP:</span>
               <span>{formatCurrency(result.valorSP)}</span>
             </div>
+          </div>
+            <div>
+            </div>
             <div className="flex justify-between border-t pt-2">
               <span className="font-bold">Valor Total do Procedimento:</span>
-              <span className="font-bold">{formatCurrency(result.valorTotalProcedimento)}</span>
+              <span className="font-bold">
+                {formatCurrency(result.valorTotalProcedimento)}
+              </span>
             </div>
-          </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

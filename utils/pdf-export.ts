@@ -33,10 +33,10 @@ export const exportToPDF = (result: MedicalFeeResult) => {
 
   const htmlContent = `
     <!DOCTYPE html>
-    <html lang="pt-BR">
+    <html lang='pt-BR'>
     <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta charset='UTF-8'>
+      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
       <title>Cálculo Hospitalar - ${result.codigo}</title>
       <style>
         * {
@@ -296,9 +296,9 @@ export const exportToPDF = (result: MedicalFeeResult) => {
       </style>
     </head>
     <body>
-      <div class="header">
+      <div class='header'>
         <h1>CÁLCULO DE PROCEDIMENTOS HOSPITALARES</h1>
-        <div class="subtitle">
+        <div class='subtitle'>
           <strong>DATTRA</strong> • Relatório gerado em: ${formatDateTime(Date.now())}
         </div>
       </div>
@@ -306,23 +306,23 @@ export const exportToPDF = (result: MedicalFeeResult) => {
       ${
         result.multiplosProcedimentos && result.procedimentos && result.procedimentos.length > 0
           ? `
-      <div class="procedures-section">
+      <div class='procedures-section'>
         <h3>📝 Múltiplos Procedimentos (${result.procedimentos.length})</h3>
         ${result.procedimentos
           .map(
             (proc, index) => `
-        <div class="procedure-item">
-          <div class="procedure-header">
-            <span class="procedure-line">Linha ${index + 1}</span>
+        <div class='procedure-item'>
+          <div class='procedure-header'>
+            <span class='procedure-line'>Linha ${index + 1}</span>
             ${
               proc.porcentagens.length > index
-                ? `<span class="procedure-percent">${proc.porcentagens[index]}% do valor SP</span>`
+                ? `<span class='procedure-percent'>${proc.porcentagens[index]}% do valor SP</span>`
                 : ""
             }
           </div>
-          <div class="procedure-code">${proc.codigo}</div>
-          <div class="procedure-desc">${proc.descricao}</div>
-          ${proc.auxiliares > 0 ? `<div class="procedure-desc"><strong>Auxiliares sugeridos:</strong> ${proc.auxiliares}</div>` : ""}
+          <div class='procedure-code'>${proc.codigo}</div>
+          <div class='procedure-desc'>${proc.descricao}</div>
+          ${proc.auxiliares > 0 ? `<div class='procedure-desc'><strong>Auxiliares sugeridos:</strong> ${proc.auxiliares}</div>` : ""}
         </div>
         `,
           )
@@ -332,41 +332,41 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           : ""
       }
 
-      <div class="grid-2">
-        <div class="info-group">
-          <div class="section-title">Informações do Procedimento</div>
-          <div class="info-line">
+      <div class='grid-2'>
+        <div class='info-group'>
+          <div class='section-title'>Informações do Procedimento</div>
+          <div class='info-line'>
             <span><strong>Código:</strong></span>
             <span>${result.codigo}</span>
           </div>
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor Incremento:</strong></span>
             <span>${result.incremento}%</span>
           </div>
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor SH:</strong></span>
             <span>${formatCurrency(result.valorSH)}</span>
           </div>
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor TSP:</strong></span>
             <span>${formatCurrency(result.valorTSP)}</span>
           </div>
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor Anestesia:</strong></span>
             <span>${result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}</span>
           </div>
         </div>
         
-        <div class="info-group">
-          <div class="section-title">Valores dos Profissionais</div>
-          <div class="info-line">
+        <div class='info-group'>
+          <div class='section-title'>Valores dos Profissionais</div>
+          <div class='info-line'>
             <span><strong>Valor Cirurgião:</strong></span>
             <span>${formatCurrency(result.valorCirurgiao)}</span>
           </div>
           ${
             result.quantidadeAuxiliares >= 1
               ? `
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor 1º Auxiliar:</strong></span>
             <span>${formatCurrency(result.valorPrimeiroAuxiliar)}</span>
           </div>
@@ -376,14 +376,14 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           ${
             result.quantidadeAuxiliares >= 2
               ? `
-          <div class="info-line">
+          <div class='info-line'>
             <span><strong>Valor Auxiliares 2º ao 5º:</strong></span>
             <span>${formatCurrency(valorAuxiliares2ao5)}</span>
           </div>
           `
               : ""
           }
-          <div class="info-line highlight">
+          <div class='info-line highlight'>
             <span><strong>Valor Total SP:</strong></span>
             <span>${formatCurrency(result.valorSP)}</span>
           </div>
@@ -393,14 +393,14 @@ export const exportToPDF = (result: MedicalFeeResult) => {
       ${
         hasConfigurations
           ? `
-      <div class="badges-section">
-        <div class="section-title">Configurações Ativas</div>
-        <div class="badges-container">
+      <div class='badges-section'>
+        <div class='section-title'>Configurações Ativas</div>
+        <div class='badges-container'>
           ${
             result.anestesistaEnabled
               ? `
-          <span class="badge badge-anestesia">
-            <span class="icon">💉</span>
+          <span class='badge badge-anestesia'>
+            <span class='icon'>💉</span>
             Anestesia
           </span>
           `
@@ -409,8 +409,8 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           ${
             result.incremento > 0
               ? `
-          <span class="badge badge-incremento">
-            <span class="icon">%</span>
+          <span class='badge badge-incremento'>
+            <span class='icon'>%</span>
             Incremento ${result.incremento}%
           </span>
           `
@@ -419,8 +419,8 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           ${
             result.multiplosProcedimentos
               ? `
-          <span class="badge badge-multiplos">
-            <span class="icon">📋</span>
+          <span class='badge badge-multiplos'>
+            <span class='icon'>📋</span>
             Múltiplos Procedimentos
           </span>
           `
@@ -429,8 +429,8 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           ${
             result.quantidadeAuxiliares > 0
               ? `
-          <span class="badge badge-auxiliar">
-            <span class="icon">👥</span>
+          <span class='badge badge-auxiliar'>
+            <span class='icon'>👥</span>
             ${result.quantidadeAuxiliares} ${result.quantidadeAuxiliares === 1 ? "Auxiliar" : "Auxiliares"}
           </span>
           `
@@ -442,15 +442,15 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           : ""
       }
 
-      <div class="total-section">
+      <div class='total-section'>
         <h2>💰 VALOR TOTAL DO PROCEDIMENTO</h2>
-        <div class="total-value">${formatCurrency(result.valorTotalProcedimento)}</div>
-        <div class="total-description">
+        <div class='total-value'>${formatCurrency(result.valorTotalProcedimento)}</div>
+        <div class='total-description'>
           SH + TSP + SP${result.incremento > 0 ? ` (com incremento de ${result.incremento}%)` : ""}${result.anestesistaEnabled ? " + Anestesia" : ""}
         </div>
       </div>
 
-      <div class="footer">
+      <div class='footer'>
         <strong>DATTRA - Sistema de Cálculo de Procedimentos Hospitalares</strong><br>
         Cálculo realizado em: ${formatDateTime(result.timestamp)}
       </div>

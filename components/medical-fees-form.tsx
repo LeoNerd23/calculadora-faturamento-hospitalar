@@ -28,7 +28,7 @@ export default function MedicalFeesForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [isClearing, setIsClearing] = useState(false)
-  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [, setFormSubmitted] = useState(false)
 
   const initialFormData: MedicalFeeInput = {
     codigo: "",

@@ -11,21 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import {
-  ArrowLeft,
-  Trash2,
-  Download,
-  Calculator,
-  List,
-  FileText,
-  Search,
-  Filter,
-  X,
-  Users,
-  Syringe,
-  Percent,
-  ClipboardList,
-} from "lucide-react"
+import { ArrowLeft, Trash2, Download, Calculator, List, FileText, Search, Filter, X, Users, Syringe, Percent } from 'lucide-react'
 import Link from "next/link"
 import type { MedicalFeeResult } from "@/types/calculation"
 import { getCalculationHistory, clearCalculationHistory, formatCurrency } from "@/utils/calculation"
@@ -170,7 +156,7 @@ export default function HistoricoPage() {
       {/* Barra de busca e filtros */}
       {history.length > 0 && (
         <Card>
-          <CardContent>
+          <CardContent className="pt-6">
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Barra de busca */}
               <div className="flex-1 relative">
@@ -301,7 +287,8 @@ export default function HistoricoPage() {
                 <span className="text-sm text-muted-foreground">Filtros ativos:</span>
                 {searchTerm.trim() && (
                   <Badge variant="outline" className="bg-gray-50">
-                    <Search className="h-3 w-3 mr-1" />"{searchTerm}"
+                    <Search className="h-3 w-3 mr-1" />
+                    &ldquo;{searchTerm}&rdquo;
                   </Badge>
                 )}
                 {filters.anestesia && (
@@ -376,7 +363,7 @@ export default function HistoricoPage() {
                     <AccordionTrigger className="hover:no-underline px-4 py-3 bg-gray-50 cursor-pointer">
                       <div className="flex items-center justify-between w-full mr-4">
                         <div className="flex items-center gap-3">
-                          <ClipboardList  className="h-4 w-4" />
+                          <Calculator className="h-4 w-4" />
                           <div className="text-left">
                             <p className="font-medium">Código: {result.codigo}</p>
                             <p className="text-sm text-muted-foreground">

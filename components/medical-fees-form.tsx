@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { History, RotateCcw, Calculator, User, Users, Info } from "lucide-react"
+import { History, RotateCcw, Calculator, User, Users, Info } from 'lucide-react'
 import Link from "next/link"
 import CalculationResult from "@/components/calculation-result"
 import LoadingOverlay from "@/components/loading-overlay"
@@ -490,7 +490,7 @@ export default function MedicalFeesForm() {
                 <Calculator className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-muted-foreground mb-2">Resultado do Cálculo</h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
-                  Preencha os campos obrigatórios e clique em "Calcular" para ver o resultado aqui.
+                  Preencha os campos obrigatórios e clique em &ldquo;Calcular&rdquo; para ver o resultado aqui.
                 </p>
               </CardContent>
             </Card>

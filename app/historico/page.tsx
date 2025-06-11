@@ -11,7 +11,31 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Trash2, Download, Calculator, List, FileText, Search, Filter, X, Users, Syringe, Percent } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  ArrowLeft,
+  Trash2,
+  Download,
+  Calculator,
+  List,
+  FileText,
+  Search,
+  Filter,
+  X,
+  Users,
+  Syringe,
+  Percent,
+  AlertTriangle,
+  ClipboardList,
+} from "lucide-react"
 import Link from "next/link"
 import type { MedicalFeeResult } from "@/types/calculation"
 import { getCalculationHistory, clearCalculationHistory, formatCurrency } from "@/utils/calculation"
@@ -28,6 +52,7 @@ export default function HistoricoPage() {
   const [history, setHistory] = useState<MedicalFeeResult[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     anestesia: false,
     multiplos: false,
@@ -77,10 +102,9 @@ export default function HistoricoPage() {
   }, [history, searchTerm, filters])
 
   const handleClearHistory = () => {
-    if (window.confirm("Tem certeza que deseja limpar todo o histórico?")) {
-      clearCalculationHistory()
-      setHistory([])
-    }
+    clearCalculationHistory()
+    setHistory([])
+    setIsDialogOpen(false)
   }
 
   const handleFilterChange = (filterKey: keyof FilterState, checked: boolean) => {
@@ -146,17 +170,47 @@ export default function HistoricoPage() {
         </div>
 
         {history.length > 0 && (
-          <Button variant="destructive" onClick={handleClearHistory} className="cursor-pointer">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Limpar Histórico
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="destructive" className="cursor-pointer">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Limpar Histórico
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                  Confirmar Exclusão
+                </DialogTitle>
+                <DialogDescription className="text-left">
+                  Tem certeza que deseja limpar todo o histórico de cálculos?
+                  <br />
+                  <br />
+                  <span className="font-medium text-red-600">
+                    Esta ação não pode ser desfeita e todos os {history.length}{" "}
+                    {history.length === 1 ? "cálculo será removido" : "cálculos serão removidos"} permanentemente.
+                  </span>
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="cursor-pointer">
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={handleClearHistory} className="cursor-pointer">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Sim, Limpar Histórico
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
 
       {/* Barra de busca e filtros */}
       {history.length > 0 && (
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Barra de busca */}
               <div className="flex-1 relative">
@@ -287,8 +341,7 @@ export default function HistoricoPage() {
                 <span className="text-sm text-muted-foreground">Filtros ativos:</span>
                 {searchTerm.trim() && (
                   <Badge variant="outline" className="bg-gray-50">
-                    <Search className="h-3 w-3 mr-1" />
-                    &ldquo;{searchTerm}&rdquo;
+                    <Search className="h-3 w-3 mr-1" />"{searchTerm}"
                   </Badge>
                 )}
                 {filters.anestesia && (
@@ -363,7 +416,7 @@ export default function HistoricoPage() {
                     <AccordionTrigger className="hover:no-underline px-4 py-3 bg-gray-50 cursor-pointer">
                       <div className="flex items-center justify-between w-full mr-4">
                         <div className="flex items-center gap-3">
-                          <Calculator className="h-4 w-4" />
+                          <ClipboardList className="h-4 w-4" />
                           <div className="text-left">
                             <p className="font-medium">Código: {result.codigo}</p>
                             <p className="text-sm text-muted-foreground">
@@ -380,7 +433,7 @@ export default function HistoricoPage() {
                           )}
                           {result.incremento > 0 && (
                             <Badge className="text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-                              {result.incremento}%
+                              {result.incremento.toFixed(1)}%
                             </Badge>
                           )}
                           {result.multiplosProcedimentos && (
@@ -392,7 +445,7 @@ export default function HistoricoPage() {
                           {result.quantidadeAuxiliares > 0 && (
                             <Badge className="text-xs bg-purple-100 text-purple-800 hover:bg-purple-200">
                               <Users className="h-3 w-3 mr-1" />
-                              {result.quantidadeAuxiliares} Aux
+                              {Math.round(result.quantidadeAuxiliares)} Aux
                             </Badge>
                           )}
                         </div>
@@ -415,106 +468,231 @@ export default function HistoricoPage() {
                         </Button>
                       </div>
 
-                      {/* Múltiplos Procedimentos */}
+                      {/* Detalhes de cada linha - só para múltiplos procedimentos */}
+                      {result.multiplosProcedimentos &&
+                        result.linhasCalculadas &&
+                        result.linhasCalculadas.length > 0 && (
+                          <div className="space-y-4 mb-6">
+                            <h4 className="font-medium text-sm flex items-center gap-2">
+                              <List className="h-4 w-4" />
+                              Detalhes por Linha ({result.linhasCalculadas.length})
+                            </h4>
+                            <div className="space-y-3">
+                              {result.linhasCalculadas.map((linha, linhaIndex) => (
+                                <div
+                                  key={linhaIndex}
+                                  className="bg-gray-50 p-4 rounded border text-sm border-l-4 border-l-blue-500"
+                                >
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
+                                        Linha {linha.linha}
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs">
+                                        {linha.porcentagem}% do SH
+                                      </Badge>
+                                    </div>
+                                    <span className="font-medium text-green-600">
+                                      {formatCurrency(linha.valorTotalLinha)}
+                                    </span>
+                                  </div>
+
+                                  <div className="space-y-2 mb-3">
+                                    <p className="font-medium">{linha.codigo}</p>
+                                    <p className="text-muted-foreground text-xs">{linha.descricao}</p>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Coluna 1: Informações básicas */}
+                                    <div className="space-y-2">
+                                      <h5 className="font-medium text-xs">Informações do Procedimento</h5>
+                                      <div className="space-y-1 text-xs">
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Quantidade de Pontos:</strong>
+                                          </span>
+                                          <span>{linha.quantidadePontos}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor Incremento:</strong>
+                                          </span>
+                                          <span>{linha.incremento}%</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor SH:</strong>
+                                          </span>
+                                          <span>{formatCurrency(linha.valorSH)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor TSP:</strong>
+                                          </span>
+                                          <span>{formatCurrency(linha.valorTSP)}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Coluna 2: Valores dos profissionais */}
+                                    <div className="space-y-2">
+                                      <h5 className="font-medium text-xs">Valores dos Profissionais</h5>
+                                      <div className="space-y-1 text-xs">
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor Anestesia:</strong>
+                                          </span>
+                                          <span>
+                                            {linha.anestesistaEnabled
+                                              ? formatCurrency(linha.valorAnestesista)
+                                              : "R$ 0,00"}
+                                          </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor Cirurgião:</strong>
+                                          </span>
+                                          <span>{formatCurrency(linha.valorCirurgiao)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor 1º Auxiliar:</strong>
+                                          </span>
+                                          <span>{formatCurrency(linha.valorPrimeiroAuxiliar)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>
+                                            <strong>Valor Auxiliares 2º ao 5º:</strong>
+                                          </span>
+                                          <span>
+                                            {formatCurrency(
+                                              linha.valorSegundoAuxiliar +
+                                                linha.valorTerceiroAuxiliar +
+                                                linha.valorQuartoAuxiliar +
+                                                linha.valorQuintoAuxiliar,
+                                            )}
+                                          </span>
+                                        </div>
+                                        <div className="flex justify-between border-t pt-1">
+                                          <span>
+                                            <strong>Valor Total SP:</strong>
+                                          </span>
+                                          <span>{formatCurrency(linha.valorSP)}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Badges de configurações da linha */}
+                                  <div className="flex flex-wrap gap-2 mt-3">
+                                    {linha.anestesistaEnabled && (
+                                      <Badge className="text-xs bg-blue-500 hover:bg-blue-600">
+                                        <Syringe className="h-3 w-3 mr-1" />
+                                        Anestesia
+                                      </Badge>
+                                    )}
+                                    {linha.incremento > 0 && (
+                                      <Badge className="text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                                        <Percent className="h-3 w-3 mr-1" />
+                                        {linha.incremento}%
+                                      </Badge>
+                                    )}
+                                    {linha.quantidadeAuxiliares > 0 && (
+                                      <Badge className="text-xs bg-purple-100 text-purple-800 hover:bg-purple-200">
+                                        <Users className="h-3 w-3 mr-1" />
+                                        {linha.quantidadeAuxiliares} Aux
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Múltiplos Procedimentos - resumo */}
                       {result.multiplosProcedimentos && result.procedimentos && result.procedimentos.length > 0 && (
                         <div className="space-y-2 mb-4">
                           <h4 className="font-medium text-sm flex items-center gap-2">
                             <List className="h-4 w-4" />
-                            Procedimentos ({result.procedimentos.length})
+                            Resumo - Procedimentos ({result.procedimentos.length})
                           </h4>
-                          <div className="grid gap-2">
-                            {result.procedimentos.map((proc, procIndex) => (
-                              <div key={proc.id} className="bg-gray-50 p-3 rounded border text-sm">
-                                <div className="flex items-center justify-between mb-1">
-                                  <Badge variant="outline" className="text-xs">
-                                    Linha {procIndex + 1}
-                                  </Badge>
-                                  {proc.porcentagens.length > procIndex && (
-                                    <span className="text-xs text-muted-foreground">
-                                      {proc.porcentagens[procIndex]}% do SP
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="font-medium">{proc.codigo}</p>
-                                <p className="text-muted-foreground text-xs truncate">{proc.descricao}</p>
-                              </div>
-                            ))}
+                          <div className="bg-blue-50 border border-blue-200 rounded p-2 text-sm">
+                            <p className="text-blue-800">
+                              <strong>Procedimento Principal:</strong> {result.procedimentoPrincipal}
+                            </p>
                           </div>
                         </div>
                       )}
 
-                      {/* Valores em duas colunas */}
+                      {/* Valores totais em duas colunas */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                         {/* Coluna 1: Informações básicas */}
                         <div className="space-y-2">
-                          <h4 className="font-medium text-sm">Informações do Procedimento</h4>
+                          <h4 className="font-medium text-sm">Totais do Procedimento</h4>
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                               <span>
-                                <strong>Código:</strong>
+                                <strong>Código Principal:</strong>
                               </span>
                               <span>{result.codigo}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>
-                                <strong>Valor Incremento:</strong>
-                              </span>
-                              <span>{result.incremento}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>
-                                <strong>Valor SH:</strong>
+                                <strong>Valor Total SH:</strong>
                               </span>
                               <span>{formatCurrency(result.valorSH)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>
-                                <strong>Valor TSP:</strong>
+                                <strong>Valor Total TSP:</strong>
                               </span>
                               <span>{formatCurrency(result.valorTSP)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>
-                                <strong>Valor Anestesia:</strong>
+                                <strong>Valor Total SP:</strong>
                               </span>
-                              <span>
-                                {result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}
-                              </span>
+                              <span>{formatCurrency(result.valorSP)}</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Coluna 2: Valores dos profissionais */}
                         <div className="space-y-2">
-                          <h4 className="font-medium text-sm">Valores dos Profissionais</h4>
+                          <h4 className="font-medium text-sm">Totais dos Profissionais</h4>
                           <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                               <span>
-                                <strong>Valor Cirurgião:</strong>
+                                <strong>Valor Total Anestesia:</strong>
+                              </span>
+                              <span>
+                                {result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>
+                                <strong>Total Cirurgião:</strong>
                               </span>
                               <span>{formatCurrency(result.valorCirurgiao)}</span>
                             </div>
-                            {result.quantidadeAuxiliares >= 1 && (
-                              <div className="flex justify-between">
-                                <span>
-                                  <strong>Valor 1º Auxiliar:</strong>
-                                </span>
-                                <span>{formatCurrency(result.valorPrimeiroAuxiliar)}</span>
-                              </div>
-                            )}
-                            {result.quantidadeAuxiliares >= 2 && (
-                              <div className="flex justify-between">
-                                <span>
-                                  <strong>Valor Auxiliares 2º ao 5º:</strong>
-                                </span>
-                                <span>{formatCurrency(valorAuxiliares2ao5)}</span>
-                              </div>
-                            )}
+                            <div className="flex justify-between">
+                              <span>
+                                <strong>Total 1º Auxiliar:</strong>
+                              </span>
+                              <span>{formatCurrency(result.valorPrimeiroAuxiliar)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>
+                                <strong>Total Auxiliares 2º ao 5º:</strong>
+                              </span>
+                              <span>{formatCurrency(valorAuxiliares2ao5)}</span>
+                            </div>
                             <div className="flex justify-between border-t pt-1">
                               <span>
-                                <strong>Valor Total SP:</strong>
+                                <strong>Total Pontos:</strong>
                               </span>
-                              <span>{formatCurrency(result.valorSP)}</span>
+                              <span>{Math.round(result.totalPontos)}</span>
                             </div>
                           </div>
                         </div>

@@ -2,7 +2,7 @@ import type { ProcedimentoDatabase } from "@/types/calculation"
 
 export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
   {
-    codigo: "415010012",
+    codigo: "0415010012",
     descricao: "TRATAMENTO C/ CIRURGIAS MULTIPLAS",
     linha1: 100,
     linha2: 75,
@@ -12,7 +12,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 0,
   },
   {
-    codigo: "415020018",
+    codigo: "0415020018",
     descricao: "PROCEDIMENTOS SEQUENCIAIS DE CIRURGIA PLÁSTICA REPARADORA PÓS-CIRURGIA BARIATRICA",
     linha1: 100,
     linha2: 100,
@@ -22,7 +22,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 1,
   },
   {
-    codigo: "415020034",
+    codigo: "0415020034",
     descricao: "OUTROS PROCEDIMENTOS COM CIRURGIAS SEQUENCIAIS",
     linha1: 100,
     linha2: 75,
@@ -32,7 +32,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 2,
   },
   {
-    codigo: "415020042",
+    codigo: "0415020042",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ANOMALIA CRÂNIO E BUCOMAXILOFACIAL",
     linha1: 100,
     linha2: 75,
@@ -42,7 +42,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 3,
   },
   {
-    codigo: "415020050",
+    codigo: "0415020050",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ONCOLOGIA",
     linha1: 100,
     linha2: 75,
@@ -52,7 +52,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 4,
   },
   {
-    codigo: "415020069",
+    codigo: "0415020069",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ORTOPEDIA",
     linha1: 100,
     linha2: 75,
@@ -62,7 +62,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 5,
   },
   {
-    codigo: "415020077",
+    codigo: "0415020077",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM NEUROCIRURGIA",
     linha1: 100,
     linha2: 75,
@@ -72,7 +72,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 0,
   },
   {
-    codigo: "415030013",
+    codigo: "0415030013",
     descricao: "TRATAMENTO CIRURGICO EM POLITRAUMATIZADO",
     linha1: 100,
     linha2: 100,

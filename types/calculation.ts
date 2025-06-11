@@ -7,6 +7,27 @@ export interface MedicalFeeInput {
   incremento: string
   quantidadeAuxiliares: string
   anestesistaEnabled?: boolean
+  multiplosProcedimentos?: boolean
+  procedimentos?: ProcedimentoSelecionado[]
+}
+
+export interface ProcedimentoSelecionado {
+  id: string
+  codigo: string
+  descricao: string
+  porcentagens: number[]
+  auxiliares: number
+}
+
+export interface ProcedimentoDatabase {
+  codigo: string
+  descricao: string
+  linha1: number
+  linha2: number
+  linha3: number
+  linha4: number
+  linha5: number
+  auxiliares: number
 }
 
 export interface MedicalFeeResult {
@@ -29,5 +50,7 @@ export interface MedicalFeeResult {
   totalPontos: number
   valorTotalProcedimento: number
   anestesistaEnabled: boolean
+  multiplosProcedimentos?: boolean
+  procedimentos?: ProcedimentoSelecionado[]
   timestamp: number
 }

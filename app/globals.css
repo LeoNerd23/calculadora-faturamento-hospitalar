@@ -120,3 +120,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .animate-spin-360 {
+    animation: spin-360 0.6s ease-in-out;
+  }
+}
+
+@keyframes spin-360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

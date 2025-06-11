@@ -1,17 +1,11 @@
-"use client"
+import MedicalFeesForm from "@/components/medical-fees-form"
+import Image from "next/image"
 
-import { Card } from "@/components/ui/card"
-import MedicalFeesForm from "../components/medical-fees-form"
-import Image from 'next/image'
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6">
-      <div className="w-full max-w-4xl">
-        <MedicalFeesForm />
-      </div>
-      <Card className="border-0 shadow-none rounded-none">
-        <div className="container mx-auto px-4 py-4">
+    <div className="container mx-auto p-4">
+      <MedicalFeesForm />
+    <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col items-center space-y-4">
             <Image src="/dattra-icon.png" alt="Logo da Dattra" width={30} height={50} />
             <div className="flex items-center flex-col gap-4">
@@ -21,7 +15,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </Card>
-    </main>
+    </div>
   )
 }

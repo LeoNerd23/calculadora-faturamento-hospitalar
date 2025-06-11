@@ -24,9 +24,25 @@ export const calculateMedicalFees = (data: MedicalFeeInput): MedicalFeeResult =>
   const quantidadeAuxiliares = Number.parseInt(data.quantidadeAuxiliares) || 0
   const incremento = data.incremento ? Number.parseInt(data.incremento) : 0
   const anestesistaEnabled = data.anestesistaEnabled || false
+  const multiplosProcedimentos = data.multiplosProcedimentos || false
+  const procedimentos = data.procedimentos || []
 
   // Aplicar incremento no valor SP se habilitado
-  const valorSPComIncremento = incremento > 0 ? valorSP * (1 + incremento / 100) : valorSP
+  let valorSPComIncremento = incremento > 0 ? valorSP * (1 + incremento / 100) : valorSP
+
+  // Se múltiplos procedimentos estão habilitados, calcular com base nas porcentagens
+  if (multiplosProcedimentos && procedimentos.length > 0) {
+    let valorSPTotal = 0
+
+    procedimentos.forEach((proc, index) => {
+      if (proc.porcentagens.length > index) {
+        const porcentagem = proc.porcentagens[index] / 100
+        valorSPTotal += valorSP * porcentagem
+      }
+    })
+
+    valorSPComIncremento = incremento > 0 ? valorSPTotal * (1 + incremento / 100) : valorSPTotal
+  }
 
   // Cálculo do valor do anestesista (30% do valor SP com incremento) se habilitado
   const valorAnestesista = anestesistaEnabled ? valorSPComIncremento * 0.3 : 0
@@ -88,6 +104,8 @@ export const calculateMedicalFees = (data: MedicalFeeInput): MedicalFeeResult =>
     totalPontos,
     valorTotalProcedimento,
     anestesistaEnabled,
+    multiplosProcedimentos,
+    procedimentos,
     timestamp: Date.now(),
   }
 }

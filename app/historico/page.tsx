@@ -341,7 +341,8 @@ export default function HistoricoPage() {
                 <span className="text-sm text-muted-foreground">Filtros ativos:</span>
                 {searchTerm.trim() && (
                   <Badge variant="outline" className="bg-gray-50">
-                    <Search className="h-3 w-3 mr-1" />"{searchTerm}"
+                    <Search className="h-3 w-3 mr-1" />
+                    &quot;{searchTerm}&quot;
                   </Badge>
                 )}
                 {filters.anestesia && (

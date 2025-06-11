@@ -622,7 +622,9 @@ export default function MedicalFeesForm() {
             <Card className="w-full xl:sticky xl:top-6">
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                 <Calculator className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold text-muted-foreground mb-2">Resultado do Cálculo</h3>
+                 <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                  &quot;Resultado do Cálculo&quot;
+                </h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
                   Preencha os campos obrigatórios e clique em "Calcular" para ver o resultado aqui.
                 </p>

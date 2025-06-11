@@ -99,10 +99,10 @@ export default function MultiplosProcedimentos({
     }
   }
 
-  const atualizarProcedimento = (index: number, campo: keyof ProcedimentoSelecionado, valor: any) => {
+  const atualizarProcedimento = (index: number, campo: keyof ProcedimentoSelecionado, valor: string | boolean) => {
     const procedimentosAtualizados = safeProcedimentos.map((proc, i) => {
       if (i === index) {
-        if (campo === "codigo") {
+        if (campo === "codigo" && typeof valor === "string") {
           // Verificar se o código existe no banco de dados
           const procedimentoDb = PROCEDIMENTOS_DATABASE.find((p) => p.codigo === valor)
           if (procedimentoDb) {
@@ -206,6 +206,14 @@ export default function MultiplosProcedimentos({
     } else {
       atualizarProcedimento(index, field, value)
     }
+  }
+
+  const handleSwitchChange = (index: number, field: "anestesistaEnabled" | "incrementoEnabled", checked: boolean) => {
+    atualizarProcedimento(index, field, checked)
+  }
+
+  const handleSelectChange = (index: number, field: "quantidadeAuxiliares", value: string) => {
+    atualizarProcedimento(index, field, value)
   }
 
   // Funções de Drag and Drop
@@ -499,7 +507,7 @@ export default function MultiplosProcedimentos({
                       id={`anestesista-switch-${index}`}
                       className="cursor-pointer"
                       checked={procedimento.anestesistaEnabled}
-                      onCheckedChange={(checked) => atualizarProcedimento(index, "anestesistaEnabled", checked)}
+                      onCheckedChange={(checked) => handleSwitchChange(index, "anestesistaEnabled", checked)}
                     />
                     <Label htmlFor={`anestesista-switch-${index}`}>Inclui Valor da Anestesia</Label>
                   </div>
@@ -509,7 +517,7 @@ export default function MultiplosProcedimentos({
                       id={`incremento-switch-${index}`}
                       className="cursor-pointer"
                       checked={procedimento.incrementoEnabled}
-                      onCheckedChange={(checked) => atualizarProcedimento(index, "incrementoEnabled", checked)}
+                      onCheckedChange={(checked) => handleSwitchChange(index, "incrementoEnabled", checked)}
                     />
                     <Label htmlFor={`incremento-switch-${index}`}>Incremento</Label>
                   </div>
@@ -518,7 +526,7 @@ export default function MultiplosProcedimentos({
                     <Label htmlFor={`quantidadeAuxiliares-${index}`}>Quantidade de Auxiliares</Label>
                     <Select
                       value={procedimento.quantidadeAuxiliares}
-                      onValueChange={(value) => atualizarProcedimento(index, "quantidadeAuxiliares", value)}
+                      onValueChange={(value) => handleSelectChange(index, "quantidadeAuxiliares", value)}
                     >
                       <SelectTrigger id={`quantidadeAuxiliares-${index}`}>
                         <SelectValue placeholder="Selecione a quantidade" />

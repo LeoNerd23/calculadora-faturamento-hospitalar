@@ -19,6 +19,7 @@ interface MultiplosProcedimentosProps {
   procedimentoPrincipal?: string
   errors?: { [key: string]: string }
   formSubmitted?: boolean
+  onClearError?: (fieldName: string) => void
 }
 
 export default function MultiplosProcedimentos({
@@ -27,6 +28,7 @@ export default function MultiplosProcedimentos({
   procedimentoPrincipal,
   errors = {},
   formSubmitted = false,
+  onClearError,
 }: MultiplosProcedimentosProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -177,9 +179,8 @@ export default function MultiplosProcedimentos({
   const handleInputChange = (index: number, field: keyof ProcedimentoSelecionado, value: string) => {
     // Limpar erro quando o usuário começa a digitar
     const errorKey = `procedimento_${index}_${field}`
-    if (errors[errorKey] && formSubmitted) {
-      // Notificar o componente pai para limpar o erro
-      // Isso será implementado no componente pai
+    if (errors[errorKey] && formSubmitted && onClearError) {
+      onClearError(errorKey)
     }
 
     if (field === "codigo") {
@@ -377,7 +378,7 @@ export default function MultiplosProcedimentos({
 
               {/* Calculadora completa para cada procedimento */}
               <div className="p-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label
@@ -403,7 +404,18 @@ export default function MultiplosProcedimentos({
                       }
                     />
                   </div>
+
                   <div className="space-y-2">
+                    <Label htmlFor={`descricao-${index}`}>Descrição</Label>
+                    <Input
+                      id={`descricao-${index}`}
+                      type="text"
+                      placeholder="Descrição do procedimento"
+                      value={procedimento.descricao}
+                      onChange={(e) => handleInputChange(index, "descricao", e.target.value)}
+                    />
+                  </div>
+                                    <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label
                         htmlFor={`quantidadePontos-${index}`}
@@ -434,6 +446,32 @@ export default function MultiplosProcedimentos({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                   <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor={`valorSH-${index}`}
+                        className={errors[`procedimento_${index}_valorSH`] ? "text-red-500" : ""}
+                      >
+                        Valor SH <span className="text-red-500 font-bold">*</span>
+                      </Label>
+                      {errors[`procedimento_${index}_valorSH`] && (
+                        <span className="text-xs text-red-500 font-medium">
+                          {errors[`procedimento_${index}_valorSH`]}
+                        </span>
+                      )}
+                    </div>
+                    <Input
+                      id={`valorSH-${index}`}
+                      type="tel"
+                      inputMode="numeric"
+                      placeholder="R$ 0,00"
+                      value={procedimento.valorSH}
+                      onChange={(e) => handleInputChange(index, "valorSH", e.target.value)}
+                      className={
+                        errors[`procedimento_${index}_valorSH`] ? "border-red-500 focus-visible:ring-red-500" : ""
+                      }
+                    />
+                  </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label
@@ -462,33 +500,6 @@ export default function MultiplosProcedimentos({
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor={`valorSH-${index}`}
-                        className={errors[`procedimento_${index}_valorSH`] ? "text-red-500" : ""}
-                      >
-                        Valor SH <span className="text-red-500 font-bold">*</span>
-                      </Label>
-                      {errors[`procedimento_${index}_valorSH`] && (
-                        <span className="text-xs text-red-500 font-medium">
-                          {errors[`procedimento_${index}_valorSH`]}
-                        </span>
-                      )}
-                    </div>
-                    <Input
-                      id={`valorSH-${index}`}
-                      type="tel"
-                      inputMode="numeric"
-                      placeholder="R$ 0,00"
-                      value={procedimento.valorSH}
-                      onChange={(e) => handleInputChange(index, "valorSH", e.target.value)}
-                      className={
-                        errors[`procedimento_${index}_valorSH`] ? "border-red-500 focus-visible:ring-red-500" : ""
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor={`valorTSP-${index}`}>Valor TSP</Label>
                     <Input
                       id={`valorTSP-${index}`}
@@ -501,7 +512,7 @@ export default function MultiplosProcedimentos({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2">
                     <Switch
                       id={`anestesista-switch-${index}`}
@@ -522,6 +533,21 @@ export default function MultiplosProcedimentos({
                     <Label htmlFor={`incremento-switch-${index}`}>Incremento</Label>
                   </div>
 
+                  {procedimento.incrementoEnabled && (
+                    <div className="space-y-2">
+                      <Label htmlFor={`incremento-${index}`}>Valor do Incremento (%)</Label>
+                      <Input
+                        id={`incremento-${index}`}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Digite o valor do incremento"
+                        value={procedimento.incremento}
+                        onChange={(e) => handleInputChange(index, "incremento", e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+
                   <div className="space-y-2">
                     <Label htmlFor={`quantidadeAuxiliares-${index}`}>Quantidade de Auxiliares</Label>
                     <Select
@@ -540,27 +566,9 @@ export default function MultiplosProcedimentos({
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                {procedimento.incrementoEnabled && (
+                {procedimento.descricao && procedimento.descricao !== procedimento.codigo && (
                   <div className="space-y-2">
-                    <Label htmlFor={`incremento-${index}`}>Valor do Incremento (%)</Label>
-                    <Input
-                      id={`incremento-${index}`}
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Digite o valor do incremento"
-                      value={procedimento.incremento}
-                      onChange={(e) => handleInputChange(index, "incremento", e.target.value)}
-                    />
-                  </div>
-                )}
-
-                {procedimento.descricao && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground break-words bg-gray-50 p-2 rounded">
-                      <strong>Descrição:</strong> {procedimento.descricao}
-                    </p>
                     {procedimento.auxiliaresSugeridos > 0 && (
                       <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
                         <strong>Auxiliares sugeridos:</strong> {procedimento.auxiliaresSugeridos}

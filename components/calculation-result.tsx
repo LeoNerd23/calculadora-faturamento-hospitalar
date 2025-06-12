@@ -78,10 +78,12 @@ export default function CalculationResult({ result }: CalculationResultProps) {
                     </div>
 
                     <div className="space-y-2 text-sm">
-                      <p>
-                        <strong>Código:</strong> {linha.codigo}
-                      </p>
-                      <p className="text-muted-foreground">{linha.descricao}</p>
+                      <div className="flex items-center gap-2">
+                        <p>
+                          <strong>Código:</strong> {linha.codigo}
+                        </p>
+                        {linha.descricao && <p className="text-muted-foreground">{linha.descricao}</p>}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -101,6 +103,12 @@ export default function CalculationResult({ result }: CalculationResultProps) {
                             <span>Valor SP:</span>
                             <span>{formatCurrency(linha.valorSP)}</span>
                           </div>
+                          {linha.anestesistaEnabled && (
+                            <div className="flex justify-between">
+                              <span>Valor Anestesia:</span>
+                              <span>{formatCurrency(linha.valorAnestesista)}</span>
+                            </div>
+                          )}
                           {linha.incremento > 0 && (
                             <div className="flex justify-between">
                               <span>Incremento:</span>
@@ -114,12 +122,6 @@ export default function CalculationResult({ result }: CalculationResultProps) {
                       <div className="space-y-2">
                         <h4 className="font-medium text-sm">Profissionais</h4>
                         <div className="space-y-1 text-xs">
-                          {linha.anestesistaEnabled && (
-                            <div className="flex justify-between">
-                              <span>Valor Anestesia:</span>
-                              <span>{formatCurrency(linha.valorAnestesista)}</span>
-                            </div>
-                          )}
                           <div className="flex justify-between">
                             <span>Cirurgião:</span>
                             <span>{formatCurrency(linha.valorCirurgiao)}</span>
@@ -195,11 +197,23 @@ export default function CalculationResult({ result }: CalculationResultProps) {
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">Totais do Procedimento</h3>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>
                   <strong>Código Principal:</strong>
                 </span>
-                <span>{result.codigo}</span>
+                <div className="flex items-center gap-2">
+                  <span>{result.codigo}</span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>
+                  <strong>Descrição:</strong>
+                </span>
+                <div className="flex items-center gap-2">
+                  <span>
+                  <span>{result.descricao && <span className="text-muted-foreground">{result.descricao}</span>}</span>
+                </span>
+                </div>
               </div>
               {!result.multiplosProcedimentos && (
                 <div className="flex justify-between">
@@ -227,12 +241,6 @@ export default function CalculationResult({ result }: CalculationResultProps) {
                 </span>
                 <span>{formatCurrency(result.valorSP)}</span>
               </div>
-              <div className="flex justify-between">
-                <span>
-                  <strong>Valor Total Anestesia:</strong>
-                </span>
-                <span>{result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}</span>
-              </div>
             </div>
           </div>
 
@@ -240,6 +248,12 @@ export default function CalculationResult({ result }: CalculationResultProps) {
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">Totais dos Profissionais</h3>
             <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>
+                  <strong>Valor Total Anestesia:</strong>
+                </span>
+                <span>{result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}</span>
+              </div>
               <div className="flex justify-between">
                 <span>
                   <strong>Total Cirurgião:</strong>
@@ -262,11 +276,11 @@ export default function CalculationResult({ result }: CalculationResultProps) {
                 <span>
                   <strong>Total Pontos:</strong>
                 </span>
-                  <span>{Math.round(result.totalPontos)}</span>
+                <span>{Math.round(result.totalPontos)}</span>
               </div>
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Valor do Ponto:</span>
-                <span>{Math.round(result.totalPontos)}</span>
+                <span>{formatCurrency(result.valorPonto)}</span>
               </div>
             </div>
           </div>

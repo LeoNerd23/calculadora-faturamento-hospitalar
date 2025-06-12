@@ -1,5 +1,6 @@
 export interface MedicalFeeInput {
   codigo: string
+  descricao?: string
   quantidadePontos: string
   valorSP: string
   valorSH: string
@@ -63,6 +64,7 @@ export interface LinhaCalculada {
 
 export interface MedicalFeeResult {
   codigo: string
+  descricao?: string
   quantidadePontos: number
   valorSP: number
   valorSH: number

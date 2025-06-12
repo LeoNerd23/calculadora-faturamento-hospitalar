@@ -34,7 +34,6 @@ import {
   Syringe,
   Percent,
   AlertTriangle,
-  ClipboardList,
 } from "lucide-react"
 import Link from "next/link"
 import type { MedicalFeeResult } from "@/types/calculation"
@@ -417,9 +416,12 @@ export default function HistoricoPage() {
                     <AccordionTrigger className="hover:no-underline px-4 py-3 bg-gray-50 cursor-pointer">
                       <div className="flex items-center justify-between w-full mr-4">
                         <div className="flex items-center gap-3">
-                          <ClipboardList className="h-4 w-4" />
+                          <Calculator className="h-4 w-4" />
                           <div className="text-left">
-                            <p className="font-medium">Código: {result.codigo}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">Código: {result.codigo}</p>
+                              {result.descricao && <p className="text-sm text-muted-foreground">{result.descricao}</p>}
+                            </div>
                             <p className="text-sm text-muted-foreground">
                               {formatDateTime(result.timestamp)} • {formatCurrency(result.valorTotalProcedimento)}
                             </p>
@@ -499,8 +501,12 @@ export default function HistoricoPage() {
                                   </div>
 
                                   <div className="space-y-2 mb-3">
-                                    <p className="font-medium">{linha.codigo}</p>
-                                    <p className="text-muted-foreground text-xs">{linha.descricao}</p>
+                                    <div className="flex items-center gap-2">
+                                      <p className="font-medium">{linha.codigo}</p>
+                                      {linha.descricao && (
+                                        <p className="text-muted-foreground text-xs">{linha.descricao}</p>
+                                      )}
+                                    </div>
                                   </div>
 
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -532,6 +538,7 @@ export default function HistoricoPage() {
                                           </span>
                                           <span>{formatCurrency(linha.valorTSP)}</span>
                                         </div>
+                                       
                                       </div>
                                     </div>
 
@@ -539,7 +546,7 @@ export default function HistoricoPage() {
                                     <div className="space-y-2">
                                       <h5 className="font-medium text-xs">Valores dos Profissionais</h5>
                                       <div className="space-y-1 text-xs">
-                                        <div className="flex justify-between">
+                                         <div className="flex justify-between">
                                           <span>
                                             <strong>Valor Anestesia:</strong>
                                           </span>
@@ -637,6 +644,14 @@ export default function HistoricoPage() {
                                 <strong>Código Principal:</strong>
                               </span>
                               <span>{result.codigo}</span>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center gap-2">
+                                <strong>Descrição</strong>
+                                {result.descricao && (
+                                  <p className="text-muted-foreground text-xs">{result.descricao}</p>
+                                )}
+                              </div>
                             </div>
                             <div className="flex justify-between">
                               <span>

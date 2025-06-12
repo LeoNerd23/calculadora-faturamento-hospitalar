@@ -399,7 +399,7 @@ export const exportToPDF = (result: MedicalFeeResult) => {
             <span class='line-total'>${formatCurrency(linha.valorTotalLinha)}</span>
           </div>
           <div class='line-code'>${linha.codigo}</div>
-          <div class='line-desc'>${linha.descricao}</div>
+          <div class='line-desc'>${linha.descricao ? `Descrição: ${linha.descricao}` : ""}</div>
           
           <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;'>
             <!-- Coluna 1: Informações básicas -->
@@ -422,10 +422,6 @@ export const exportToPDF = (result: MedicalFeeResult) => {
                   <span><strong>Valor TSP:</strong></span>
                   <span>${formatCurrency(linha.valorTSP)}</span>
                 </div>
-                <div style='display: flex; justify-content: space-between;'>
-                  <span><strong>Valor Anestesia:</strong></span>
-                  <span>${linha.anestesistaEnabled ? formatCurrency(linha.valorAnestesista) : "R$ 0,00"}</span>
-                </div>
               </div>
             </div>
             
@@ -433,6 +429,10 @@ export const exportToPDF = (result: MedicalFeeResult) => {
             <div>
               <h5 style='font-weight: 600; font-size: 10px; margin-bottom: 8px; color: #374151;'>Valores dos Profissionais</h5>
               <div style='display: flex; flex-direction: column; gap: 3px; font-size: 9px;'>
+              <div style='display: flex; justify-content: space-between;'>
+                  <span><strong>Valor Anestesia:</strong></span>
+                  <span>${linha.anestesistaEnabled ? formatCurrency(linha.valorAnestesista) : "R$ 0,00"}</span>
+                </div>
                 <div style='display: flex; justify-content: space-between;'>
                   <span><strong>Valor Cirurgião:</strong></span>
                   <span>${formatCurrency(linha.valorCirurgiao)}</span>
@@ -498,7 +498,7 @@ export const exportToPDF = (result: MedicalFeeResult) => {
       <div class='procedures-section'>
         <h3>📝 Resumo - Múltiplos Procedimentos</h3>
         <p><strong>Procedimento Principal:</strong> ${result.procedimentoPrincipal}</p>
-        <p style='font-size: 10px; color: #6b7280; margin-top: 5px;'>As porcentagens de cada linha são aplicadas ao valor SH e determinadas pelo procedimento principal selecionado.</p>
+        <p style='font-size: 10px; color: #6b7280; margin-top: 5px;'>O valor SH irá varias de acordo com o percentual aplicado em cada linha e serão determinadas pelo procedimento principal selecionado.</p>
       </div>
       `
           : ""
@@ -509,7 +509,7 @@ export const exportToPDF = (result: MedicalFeeResult) => {
           <div class='section-title'>Totais do Procedimento</div>
           <div class='info-line'>
             <span><strong>Código Principal:</strong></span>
-            <span>${result.codigo}</span>
+            <span>${result.codigo} ${result.descricao ? `- ${result.descricao}` : ""}</span>
           </div>
           <div class='info-line'>
             <span><strong>Valor Total SH:</strong></span>
@@ -523,14 +523,14 @@ export const exportToPDF = (result: MedicalFeeResult) => {
             <span><strong>Valor Total SP:</strong></span>
             <span>${formatCurrency(result.valorSP)}</span>
           </div>
-          <div class='info-line'>
-            <span><strong>Valor Total Anestesia:</strong></span>
-            <span>${result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}</span>
-          </div>
         </div>
         
         <div class='info-group'>
           <div class='section-title'>Totais dos Profissionais</div>
+           <div class='info-line'>
+            <span><strong>Valor Total Anestesia:</strong></span>
+            <span>${result.anestesistaEnabled ? formatCurrency(result.valorAnestesista) : "R$ 0,00"}</span>
+          </div>
           <div class='info-line'>
             <span><strong>Total Cirurgião:</strong></span>
             <span>${formatCurrency(result.valorCirurgiao)}</span>
@@ -562,10 +562,18 @@ export const exportToPDF = (result: MedicalFeeResult) => {
         </div>
       </div>
 
-      ${
+       <div class='total-section'>
+        <h2>💰 VALOR TOTAL DO PROCEDIMENTO</h2>
+        <div class='total-value'>${formatCurrency(result.valorTotalProcedimento)}</div>
+        <div class='total-description'>
+          SH + TSP + SP ${result.anestesistaEnabled ? " + Anestesia" : ""}
+        </div>
+      </div>
+
+       ${
         hasConfigurations
           ? `
-      <div class='badges-section'>
+      <div class='badges-section' style="margin-top: 20px;">
         <div class='section-title'>Configurações Ativas</div>
         <div class='badges-container'>
           ${
@@ -613,14 +621,6 @@ export const exportToPDF = (result: MedicalFeeResult) => {
       `
           : ""
       }
-
-      <div class='total-section'>
-        <h2>💰 VALOR TOTAL DO PROCEDIMENTO</h2>
-        <div class='total-value'>${formatCurrency(result.valorTotalProcedimento)}</div>
-        <div class='total-description'>
-          SH + TSP + SP${result.incremento > 0 ? ` (com incremento médio de ${result.incremento.toFixed(1)}%)` : ""}${result.anestesistaEnabled ? " + Anestesia" : ""}
-        </div>
-      </div>
 
       <div class='footer'>
         <strong>DATTRA - Sistema de Cálculo de Procedimentos Hospitalares</strong><br>

@@ -31,6 +31,7 @@ export const calculateMedicalFees = (data: MedicalFeeInput): MedicalFeeResult =>
   const quantidadeAuxiliares = Number.parseInt(data.quantidadeAuxiliares) || 0
   const incremento = data.incremento ? Number.parseInt(data.incremento) : 0
   const anestesistaEnabled = data.anestesistaEnabled || false
+  const descricao = data.descricao || ""
 
   // Aplicar incremento no valor SH (conforme especificação)
   const valorSHComIncremento = incremento > 0 ? valorSH * (1 + incremento / 100) : valorSH
@@ -77,6 +78,7 @@ export const calculateMedicalFees = (data: MedicalFeeInput): MedicalFeeResult =>
 
   return {
     codigo: data.codigo,
+    descricao: data.descricao,
     quantidadePontos,
     valorSP: valorSPComIncremento,
     valorSH: valorSHComIncremento,
@@ -247,6 +249,7 @@ const calculateMultiplesProcedimentos = (data: MedicalFeeInput): MedicalFeeResul
 
   return {
     codigo: procedimentoPrincipal,
+    descricao: procedimentoDb?.descricao || "",
     quantidadePontos: quantidadePontosMedia,
     valorSP: valorSPTotal,
     valorSH: valorSHTotal,

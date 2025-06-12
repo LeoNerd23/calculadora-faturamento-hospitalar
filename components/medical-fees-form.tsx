@@ -34,6 +34,7 @@ export default function MedicalFeesForm() {
 
   const initialFormData: MedicalFeeInput = {
     codigo: "",
+    descricao: "",
     quantidadePontos: "",
     valorSP: "",
     valorSH: "",
@@ -304,7 +305,7 @@ export default function MedicalFeesForm() {
                   <Calculator />
                   Cálculo de Procedimentos Hospitalares
                 </div>
-                <p className="text-sm text-muted-foreground">v0.2.0-beta</p>
+                <p className="text-sm text-muted-foreground">v0.1.0-beta</p>
               </CardTitle>
               <CardDescription>
                 Preencha os campos abaixo para calcular os valores do Serviço Profissional e Hospitalar da AIH
@@ -392,7 +393,7 @@ export default function MedicalFeesForm() {
                 {/* Calculadora principal - só exibida quando múltiplos procedimentos NÃO está ativado */}
                 {!multiplosProcedimentosEnabled && (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="codigo" className={errors.codigo ? "text-red-500" : ""}>
@@ -409,7 +410,18 @@ export default function MedicalFeesForm() {
                           className={errors.codigo ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
                       </div>
+
                       <div className="space-y-2">
+                        <Label htmlFor="descricao">Descrição</Label>
+                        <Input
+                          id="descricao"
+                          type="text"
+                          placeholder="Descrição do procedimento"
+                          value={formData.descricao || ""}
+                          onChange={(e) => handleInputChange("descricao", e.target.value)}
+                        />
+                      </div>
+                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="quantidadePontos" className={errors.quantidadePontos ? "text-red-500" : ""}>
                             Quantidade de Pontos <span className="text-red-500 font-bold">*</span>
@@ -433,24 +445,6 @@ export default function MedicalFeesForm() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="valorSP" className={errors.valorSP ? "text-red-500" : ""}>
-                            Valor SP <span className="text-red-500 font-bold">*</span>
-                          </Label>
-                          {errors.valorSP && <span className="text-xs text-red-500 font-medium">{errors.valorSP}</span>}
-                        </div>
-                        <Input
-                          id="valorSP"
-                          type="tel"
-                          inputMode="numeric"
-                          placeholder="R$ 0,00"
-                          value={formData.valorSP}
-                          onChange={(e) => handleInputChange("valorSP", e.target.value)}
-                          className={errors.valorSP ? "border-red-500 focus-visible:ring-red-500" : ""}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
                           <Label htmlFor="valorSH" className={errors.valorSH ? "text-red-500" : ""}>
                             Valor SH <span className="text-red-500 font-bold">*</span>
                           </Label>
@@ -466,7 +460,23 @@ export default function MedicalFeesForm() {
                           className={errors.valorSH ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
                       </div>
-
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="valorSP" className={errors.valorSP ? "text-red-500" : ""}>
+                            Valor SP <span className="text-red-500 font-bold">*</span>
+                          </Label>
+                          {errors.valorSP && <span className="text-xs text-red-500 font-medium">{errors.valorSP}</span>}
+                        </div>
+                        <Input
+                          id="valorSP"
+                          type="tel"
+                          inputMode="numeric"
+                          placeholder="R$ 0,00"
+                          value={formData.valorSP}
+                          onChange={(e) => handleInputChange("valorSP", e.target.value)}
+                          className={errors.valorSP ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        />
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="valorTSP">Valor TSP</Label>
                         <Input
@@ -480,7 +490,7 @@ export default function MedicalFeesForm() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="flex items-center space-x-2">
                         <Switch
                           id="anestesista-switch"
@@ -500,6 +510,7 @@ export default function MedicalFeesForm() {
                         />
                         <Label htmlFor="incremento-switch">Incremento</Label>
                       </div>
+                      
                     </div>
 
                     {incrementoEnabled && (
@@ -515,50 +526,49 @@ export default function MedicalFeesForm() {
                         />
                       </div>
                     )}
-
-                    <div className="space-y-2">
-                      <Label htmlFor="quantidadeAuxiliares">Quantidade de Auxiliares</Label>
-                      <Select
-                        value={formData.quantidadeAuxiliares}
-                        onValueChange={(value) => handleInputChange("quantidadeAuxiliares", value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a quantidade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0">
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4" color="#050606" />0 Auxiliar
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="1">
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4" color="#050606" />1 Auxiliar
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="2">
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" color="#050606" />2 Auxiliares
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="3">
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" color="#050606" />3 Auxiliares
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="4">
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" color="#050606" />4 Auxiliares
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="5">
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" color="#050606" />5 Auxiliares
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                                          <div className="space-y-2">
+                        <Label htmlFor="quantidadeAuxiliares">Quantidade de Auxiliares</Label>
+                        <Select
+                          value={formData.quantidadeAuxiliares}
+                          onValueChange={(value) => handleInputChange("quantidadeAuxiliares", value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a quantidade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0">
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" color="#050606" />0 Auxiliar
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="1">
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" color="#050606" />1 Auxiliar
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="2">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" color="#050606" />2 Auxiliares
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="3">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" color="#050606" />3 Auxiliares
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="4">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" color="#050606" />4 Auxiliares
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="5">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" color="#050606" />5 Auxiliares
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                   </>
                 )}
 

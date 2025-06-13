@@ -2,7 +2,7 @@ import type { ProcedimentoDatabase } from "@/types/calculation"
 
 export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
   {
-    codigo: "0415010012",
+    codigo: "04.15.01.001-2",
     descricao: "TRATAMENTO C/ CIRURGIAS MULTIPLAS",
     linha1: 100,
     linha2: 75,
@@ -12,7 +12,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 0,
   },
   {
-    codigo: "0415020018",
+    codigo: "04.15.02.001-8",
     descricao: "PROCEDIMENTOS SEQUENCIAIS DE CIRURGIA PLÁSTICA REPARADORA PÓS-CIRURGIA BARIATRICA",
     linha1: 100,
     linha2: 100,
@@ -22,7 +22,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 1,
   },
   {
-    codigo: "0415020034",
+    codigo: "04.15.02.003-4",
     descricao: "OUTROS PROCEDIMENTOS COM CIRURGIAS SEQUENCIAIS",
     linha1: 100,
     linha2: 75,
@@ -32,7 +32,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 2,
   },
   {
-    codigo: "0415020042",
+    codigo: "04.15.02.004-2",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ANOMALIA CRÂNIO E BUCOMAXILOFACIAL",
     linha1: 100,
     linha2: 75,
@@ -42,7 +42,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 3,
   },
   {
-    codigo: "0415020050",
+    codigo: "04.15.02.005-0",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ONCOLOGIA",
     linha1: 100,
     linha2: 75,
@@ -52,7 +52,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 4,
   },
   {
-    codigo: "0415020069",
+    codigo: "04.15.02.006-9",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM ORTOPEDIA",
     linha1: 100,
     linha2: 75,
@@ -62,7 +62,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 5,
   },
   {
-    codigo: "0415020077",
+    codigo: "04.15.02.007-7",
     descricao: "PROCEDIMENTOS SEQUENCIAIS EM NEUROCIRURGIA",
     linha1: 100,
     linha2: 75,
@@ -72,7 +72,7 @@ export const PROCEDIMENTOS_DATABASE: ProcedimentoDatabase[] = [
     auxiliares: 0,
   },
   {
-    codigo: "0415030013",
+    codigo: "04.15.03.001-3",
     descricao: "TRATAMENTO CIRURGICO EM POLITRAUMATIZADO",
     linha1: 100,
     linha2: 100,

@@ -22,6 +22,23 @@ interface MultiplosProcedimentosProps {
   onClearError?: (fieldName: string) => void
 }
 
+const validateCodigo = (codigo: string) => {
+  const numbers = codigo.replace(/\D/g, "")
+  if (numbers.length !== 10) {
+    return "O código deve ter exatamente 10 dígitos"
+  }
+  if (!numbers.startsWith("0")) {
+    return "O código deve começar com 0"
+  }
+  return ""
+}
+
+const isCodigoValid = (codigo: string) => {
+  if (!codigo || codigo.trim() === "") return false
+  const codigoError = validateCodigo(codigo)
+  return !codigoError
+}
+
 export default function MultiplosProcedimentos({
   procedimentos = [],
   onChange,
@@ -105,9 +122,12 @@ export default function MultiplosProcedimentos({
     const procedimentosAtualizados = safeProcedimentos.map((proc, i) => {
       if (i === index) {
         if (campo === "codigo" && typeof valor === "string") {
+          // Validate código format first
+          const codigoError = validateCodigo(valor)
+
           // Verificar se o código existe no banco de dados
           const procedimentoDb = PROCEDIMENTOS_DATABASE.find((p) => p.codigo === valor)
-          if (procedimentoDb) {
+          if (procedimentoDb && !codigoError) {
             return {
               ...proc,
               codigo: procedimentoDb.codigo,
@@ -122,7 +142,7 @@ export default function MultiplosProcedimentos({
               auxiliaresSugeridos: procedimentoDb.auxiliares,
             }
           }
-          // Se não encontrou no banco, apenas atualiza o código
+          // Se não encontrou no banco ou tem erro de validação, apenas atualiza o código
           return { ...proc, [campo]: valor }
         }
         return { ...proc, [campo]: valor }
@@ -186,6 +206,14 @@ export default function MultiplosProcedimentos({
     if (field === "codigo") {
       const formatted = formatCode(value)
       atualizarProcedimento(index, field, formatted)
+
+      // Clear error if código becomes valid
+      if (formatted && formatted.trim() !== "") {
+        const codigoError = validateCodigo(formatted)
+        if (!codigoError && onClearError) {
+          onClearError(`procedimento_${index}_codigo`)
+        }
+      }
     } else if (field === "valorSP" || field === "valorSH" || field === "valorTSP") {
       // Remove tudo que não é número
       const numbers = value.replace(/\D/g, "")
@@ -400,7 +428,11 @@ export default function MultiplosProcedimentos({
                       value={procedimento.codigo}
                       onChange={(e) => handleInputChange(index, "codigo", e.target.value)}
                       className={
-                        errors[`procedimento_${index}_codigo`] ? "border-red-500 focus-visible:ring-red-500" : ""
+                        errors[`procedimento_${index}_codigo`]
+                          ? "border-red-500 focus-visible:ring-red-500"
+                          : procedimento.codigo && isCodigoValid(procedimento.codigo)
+                            ? ""
+                            : ""
                       }
                     />
                   </div>
@@ -415,7 +447,7 @@ export default function MultiplosProcedimentos({
                       onChange={(e) => handleInputChange(index, "descricao", e.target.value)}
                     />
                   </div>
-                                    <div className="space-y-2">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label
                         htmlFor={`quantidadePontos-${index}`}
@@ -446,7 +478,7 @@ export default function MultiplosProcedimentos({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                   <div className="space-y-2">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label
                         htmlFor={`valorSH-${index}`}
@@ -512,7 +544,7 @@ export default function MultiplosProcedimentos({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center space-x-2">
                     <Switch
                       id={`anestesista-switch-${index}`}
@@ -548,24 +580,24 @@ export default function MultiplosProcedimentos({
                   )}
                 </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor={`quantidadeAuxiliares-${index}`}>Quantidade de Auxiliares</Label>
-                    <Select
-                      value={procedimento.quantidadeAuxiliares}
-                      onValueChange={(value) => handleSelectChange(index, "quantidadeAuxiliares", value)}
-                    >
-                      <SelectTrigger id={`quantidadeAuxiliares-${index}`}>
-                        <SelectValue placeholder="Selecione a quantidade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[0, 1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num} {num === 1 ? "Auxiliar" : "Auxiliares"}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`quantidadeAuxiliares-${index}`}>Quantidade de Auxiliares</Label>
+                  <Select
+                    value={procedimento.quantidadeAuxiliares}
+                    onValueChange={(value) => handleSelectChange(index, "quantidadeAuxiliares", value)}
+                  >
+                    <SelectTrigger id={`quantidadeAuxiliares-${index}`}>
+                      <SelectValue placeholder="Selecione a quantidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[0, 1, 2, 3, 4, 5].map((num) => (
+                        <SelectItem key={num} value={num.toString()}>
+                          {num} {num === 1 ? "Auxiliar" : "Auxiliares"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {procedimento.descricao && procedimento.descricao !== procedimento.codigo && (
                   <div className="space-y-2">

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { History, RotateCcw, Calculator, User, Users, Info } from "lucide-react"
+import { History, RotateCcw, User, Users, Info, Stethoscope } from "lucide-react"
 import Link from "next/link"
 import CalculationResult from "@/components/calculation-result"
 import LoadingOverlay from "@/components/loading-overlay"
@@ -31,6 +31,7 @@ export default function MedicalFeesForm() {
   const [isClearing, setIsClearing] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [procedimentoPrincipal, setProcedimentoPrincipal] = useState("")
+  const [missingFields, setMissingFields] = useState<string[]>([])
 
   const initialFormData: MedicalFeeInput = {
     codigo: "",
@@ -109,6 +110,39 @@ export default function MedicalFeesForm() {
       clearFieldError(field)
     }
 
+    // Remove field from missing fields list when filled
+    if (missingFields.length > 0) {
+      let fieldName = ""
+
+      switch (field) {
+        case "codigo":
+          fieldName = "Código"
+          // Also check if the código is valid when removing from missing fields
+          if (value && value.trim() !== "") {
+            const codigoError = validateCodigo(value)
+            if (!codigoError) {
+              setMissingFields((prev) => prev.filter((item) => !item.includes("Código")))
+            }
+          }
+          break
+        case "quantidadePontos":
+          fieldName = "Quantidade de Pontos"
+          break
+        case "valorSP":
+          fieldName = "Valor SP"
+          break
+        case "valorSH":
+          fieldName = "Valor SH"
+          break
+        default:
+          fieldName = field
+      }
+
+      if (value && value.trim() !== "") {
+        setMissingFields((prev) => prev.filter((item) => item !== fieldName))
+      }
+    }
+
     if (field === "codigo") {
       const formatted = formatCode(value)
       setFormData((prev) => ({ ...prev, [field]: formatted }))
@@ -138,35 +172,50 @@ export default function MedicalFeesForm() {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
     let isValid = true
+    const missing: string[] = []
 
     if (multiplosProcedimentosEnabled) {
       // Validar procedimento principal
       if (!procedimentoPrincipal) {
         newErrors.procedimentoPrincipal = "Selecione um procedimento principal"
+        missing.push("Procedimento Principal")
         isValid = false
       }
 
       // Validar procedimentos
       if (procedimentos.length === 0) {
         newErrors.procedimentos = "Adicione pelo menos um procedimento"
+        missing.push("Procedimentos")
         isValid = false
       } else {
         // Verificar se todos os procedimentos têm os campos obrigatórios preenchidos
         procedimentos.forEach((proc, index) => {
           if (!proc.codigo || proc.codigo.trim() === "") {
-            newErrors[`procedimento_${index}_codigo`] = "Campo obrigatório"
+            newErrors[`procedimento_${index}_codigo`]
+            missing.push(`Código do Procedimento ${index + 1}`)
             isValid = false
+          } else {
+            // Validar formato do código se estiver preenchido
+            const codigoError = validateCodigo(proc.codigo)
+            if (codigoError) {
+              newErrors[`procedimento_${index}_codigo`] = "Formato inválido"
+              missing.push(`Código do Procedimento ${index + 1} (deve ter exatamente 10 dígitos e começar com 0)`)
+              isValid = false
+            }
           }
           if (!proc.quantidadePontos || proc.quantidadePontos.trim() === "") {
-            newErrors[`procedimento_${index}_quantidadePontos`] = "Campo obrigatório"
+            newErrors[`procedimento_${index}_quantidadePontos`]
+            missing.push(`Quantidade de Pontos do Procedimento ${index + 1}`)
             isValid = false
           }
           if (!proc.valorSP || proc.valorSP.trim() === "") {
-            newErrors[`procedimento_${index}_valorSP`] = "Campo obrigatório"
+            newErrors[`procedimento_${index}_valorSP`]
+            missing.push(`Valor SP do Procedimento ${index + 1}`)
             isValid = false
           }
           if (!proc.valorSH || proc.valorSH.trim() === "") {
-            newErrors[`procedimento_${index}_valorSH`] = "Campo obrigatório"
+            newErrors[`procedimento_${index}_valorSH`]
+            missing.push(`Valor SH do Procedimento ${index + 1}`)
             isValid = false
           }
         })
@@ -176,8 +225,25 @@ export default function MedicalFeesForm() {
       requiredFields.forEach((field) => {
         const value = formData[field as keyof MedicalFeeInput]
         if (!value || value.toString().trim() === "") {
-          newErrors[field] = "Campo obrigatório"
           isValid = false
+
+          // Adicionar nome amigável do campo à lista de campos faltantes
+          switch (field) {
+            case "codigo":
+              missing.push("Código")
+              break
+            case "quantidadePontos":
+              missing.push("Quantidade de Pontos")
+              break
+            case "valorSP":
+              missing.push("Valor SP")
+              break
+            case "valorSH":
+              missing.push("Valor SH")
+              break
+            default:
+              missing.push(field)
+          }
         }
       })
 
@@ -185,13 +251,14 @@ export default function MedicalFeesForm() {
       if (formData.codigo && formData.codigo.trim() !== "") {
         const codigoError = validateCodigo(formData.codigo)
         if (codigoError) {
-          newErrors.codigo = codigoError
+          missing.push("Código (deve ter exatamente 10 dígitos e começar com 0)")
           isValid = false
         }
       }
     }
 
     setErrors(newErrors)
+    setMissingFields(missing)
     return isValid
   }
 
@@ -220,6 +287,7 @@ export default function MedicalFeesForm() {
     setProcedimentos([])
     setCalculationResult(null)
     setErrors({})
+    setMissingFields([])
     setFormSubmitted(false)
     setProcedimentoPrincipal("")
 
@@ -302,10 +370,10 @@ export default function MedicalFeesForm() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Calculator />
+                  <Stethoscope />
                   Cálculo de Procedimentos Hospitalares
                 </div>
-                <p className="text-sm text-muted-foreground">v0.1.0-beta</p>
+                <p className="text-sm text-muted-foreground">v0.3.0-beta</p>
               </CardTitle>
               <CardDescription>
                 Preencha os campos abaixo para calcular os valores do Serviço Profissional e Hospitalar da AIH
@@ -396,10 +464,9 @@ export default function MedicalFeesForm() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="codigo" className={errors.codigo ? "text-red-500" : ""}>
+                          <Label htmlFor="codigo">
                             Código <span className="text-red-500 font-bold">*</span>
                           </Label>
-                          {errors.codigo && <span className="text-xs text-red-500 font-medium">{errors.codigo}</span>}
                         </div>
                         <Input
                           id="codigo"
@@ -407,7 +474,6 @@ export default function MedicalFeesForm() {
                           placeholder="00.00.00.000-0"
                           value={formData.codigo}
                           onChange={(e) => handleInputChange("codigo", e.target.value)}
-                          className={errors.codigo ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
                       </div>
 
@@ -421,7 +487,7 @@ export default function MedicalFeesForm() {
                           onChange={(e) => handleInputChange("descricao", e.target.value)}
                         />
                       </div>
-                       <div className="space-y-2">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="quantidadePontos" className={errors.quantidadePontos ? "text-red-500" : ""}>
                             Quantidade de Pontos <span className="text-red-500 font-bold">*</span>
@@ -463,7 +529,7 @@ export default function MedicalFeesForm() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="valorSP" className={errors.valorSP ? "text-red-500" : ""}>
-                            Valor SP <span className="text-red-500 font-bold">*</span>
+                            Valor SP<span className="text-red-500 font-bold">*</span>
                           </Label>
                           {errors.valorSP && <span className="text-xs text-red-500 font-medium">{errors.valorSP}</span>}
                         </div>
@@ -510,10 +576,7 @@ export default function MedicalFeesForm() {
                         />
                         <Label htmlFor="incremento-switch">Incremento</Label>
                       </div>
-                      
-                    </div>
-
-                    {incrementoEnabled && (
+                      {incrementoEnabled && (
                       <div className="space-y-2">
                         <Label htmlFor="incremento">Valor do Incremento (%)</Label>
                         <Input
@@ -526,49 +589,52 @@ export default function MedicalFeesForm() {
                         />
                       </div>
                     )}
-                                          <div className="space-y-2">
-                        <Label htmlFor="quantidadeAuxiliares">Quantidade de Auxiliares</Label>
-                        <Select
-                          value={formData.quantidadeAuxiliares}
-                          onValueChange={(value) => handleInputChange("quantidadeAuxiliares", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a quantidade" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="0">
-                              <div className="flex items-center gap-2">
-                                <User className="h-4 w-4" color="#050606" />0 Auxiliar
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="1">
-                              <div className="flex items-center gap-2">
-                                <User className="h-4 w-4" color="#050606" />1 Auxiliar
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="2">
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" color="#050606" />2 Auxiliares
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="3">
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" color="#050606" />3 Auxiliares
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="4">
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" color="#050606" />4 Auxiliares
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="5">
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" color="#050606" />5 Auxiliares
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    </div>
+
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="quantidadeAuxiliares">Quantidade de Auxiliares</Label>
+                      <Select
+                        value={formData.quantidadeAuxiliares}
+                        onValueChange={(value) => handleInputChange("quantidadeAuxiliares", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a quantidade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4" color="#050606" />0 Auxiliar
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="1">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4" color="#050606" />1 Auxiliar
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="2">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" color="#050606" />2 Auxiliares
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="3">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" color="#050606" />3 Auxiliares
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="4">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" color="#050606" />4 Auxiliares
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="5">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" color="#050606" />5 Auxiliares
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </>
                 )}
 
@@ -592,6 +658,18 @@ export default function MedicalFeesForm() {
                       ser preenchidos.
                     </span>
                   </div>
+
+                  {/* Mensagem de erro para campos não preenchidos */}
+                  {formSubmitted && missingFields.length > 0 && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600">
+                      <p className="text-sm font-medium">Por favor, preencha os seguintes campos:</p>
+                      <ul className="list-disc pl-5 text-sm mt-1">
+                        {missingFields.map((field, index) => (
+                          <li key={index}>{field}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3">
@@ -628,13 +706,9 @@ export default function MedicalFeesForm() {
           )}
 
           {/* Placeholder quando não há resultado */}
-          {!calculationResult && (
-            <Card className="w-full xl:sticky xl:top-6">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Calculator className="h-12 w-12 text-muted-foreground mb-4" />
-              </CardContent>
-            </Card>
-          )}
+          <div className="flex justify-center items-center h-full">
+            <Image src="/dattra-icon.png" alt="Logo da Dattra" width={400} height={50} />
+          </div>
         </div>
       </div>
     </div>

@@ -20,21 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  ArrowLeft,
-  Trash2,
-  Download,
-  Calculator,
-  List,
-  FileText,
-  Search,
-  Filter,
-  X,
-  Users,
-  Syringe,
-  Percent,
-  AlertTriangle,
-} from "lucide-react"
+import { ArrowLeft, Trash2, Download, List, FileText, Search, Filter, X, Users, Syringe, Percent, AlertTriangle } from 'lucide-react'
 import Link from "next/link"
 import type { MedicalFeeResult } from "@/types/calculation"
 import { getCalculationHistory, clearCalculationHistory, formatCurrency } from "@/utils/calculation"
@@ -75,9 +61,11 @@ export default function HistoricoPage() {
 
     // Filtro por código (busca)
     if (searchTerm.trim()) {
-      filtered = filtered.filter((result) =>
-        result.codigo.toLowerCase().includes(searchTerm.toLowerCase().replace(/\D/g, "")),
-      )
+      const cleanSearchTerm = searchTerm.toLowerCase().replace(/\D/g, "")
+      filtered = filtered.filter((result) => {
+        const cleanCodigo = result.codigo.toLowerCase().replace(/\D/g, "")
+        return cleanCodigo.includes(cleanSearchTerm)
+      })
     }
 
     // Aplicar filtros
@@ -376,7 +364,7 @@ export default function HistoricoPage() {
 
       {history.length === 0 ? (
         <Alert>
-          <Calculator className="h-4 w-4" />
+          <FileText className="h-4 w-4" />
           <AlertDescription>
             Nenhum cálculo foi realizado ainda. Faça seu primeiro cálculo para ver o histórico aqui.
           </AlertDescription>
@@ -416,7 +404,7 @@ export default function HistoricoPage() {
                     <AccordionTrigger className="hover:no-underline px-4 py-3 bg-gray-50 cursor-pointer">
                       <div className="flex items-center justify-between w-full mr-4">
                         <div className="flex items-center gap-3">
-                          <Calculator className="h-4 w-4" />
+                          <FileText className="h-4 w-4" />
                           <div className="text-left">
                             <div className="flex items-center gap-2">
                               <p className="font-medium">Código: {result.codigo}</p>
@@ -627,7 +615,9 @@ export default function HistoricoPage() {
                           </h4>
                           <div className="bg-blue-50 border border-blue-200 rounded p-2 text-sm">
                             <p className="text-blue-800">
-                              <strong>Procedimento Principal:</strong> {result.procedimentoPrincipal}
+                              <strong>Procedimento Principal:</strong> {result.procedimentoPrincipal} {result.descricao && (
+                                  <span className="text-muted-foreground text-xs">{result.descricao}</span>
+                                )}
                             </p>
                           </div>
                         </div>
@@ -644,14 +634,6 @@ export default function HistoricoPage() {
                                 <strong>Código Principal:</strong>
                               </span>
                               <span>{result.codigo}</span>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-center gap-2">
-                                <strong>Descrição</strong>
-                                {result.descricao && (
-                                  <p className="text-muted-foreground text-xs">{result.descricao}</p>
-                                )}
-                              </div>
                             </div>
                             <div className="flex justify-between">
                               <span>
